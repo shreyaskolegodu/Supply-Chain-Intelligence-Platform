@@ -2,6 +2,12 @@
 
 ML-powered supply chain analytics with demand zone insights for producers and delivery intelligence for consumers.
 
+## AI Handoff Context
+
+For complete architecture, data flow, endpoint contracts, and model integration notes, see:
+
+- [PROJECT_CONTEXT.md](PROJECT_CONTEXT.md)
+
 ---
 
 ## Project Structure
