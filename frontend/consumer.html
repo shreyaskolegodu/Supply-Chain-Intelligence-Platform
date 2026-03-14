@@ -1,426 +1,855 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>epoch — Consumer Dashboard</title>
-<link rel="stylesheet" href="styles.css"/>
-<style>
-  .eyebrow{color:var(--C)}
-  .stat-card .value{color:var(--C)}
-  .spinner{border-top-color:var(--C)}
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>epoch — Consumer Dashboard</title>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      .eyebrow {
+        color: var(--C);
+      }
+      .stat-card .value {
+        color: var(--C);
+      }
+      .spinner {
+        border-top-color: var(--C);
+      }
 
-  /* Query form */
-  .query-card{
-    background:var(--surface);border:1px solid var(--border);
-    border-radius:var(--radius-lg);padding:32px 36px;margin-bottom:36px;
-  }
-  .query-card h3{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;margin-bottom:6px}
-  .query-card > p{font-size:13px;color:var(--muted);margin-bottom:28px}
+      /* Query form */
+      .query-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 32px 36px;
+        margin-bottom: 36px;
+      }
+      .query-card h3 {
+        font-family: "Syne", sans-serif;
+        font-size: 16px;
+        font-weight: 700;
+        margin-bottom: 6px;
+      }
+      .query-card > p {
+        font-size: 13px;
+        color: var(--muted);
+        margin-bottom: 28px;
+      }
 
-  .input-row{display:grid;grid-template-columns:1fr 1fr auto;gap:14px;align-items:end}
-  @media(max-width:680px){.input-row{grid-template-columns:1fr}}
+      .input-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr auto;
+        gap: 14px;
+        align-items: end;
+      }
+      @media (max-width: 680px) {
+        .input-row {
+          grid-template-columns: 1fr;
+        }
+      }
 
-  .field{display:flex;flex-direction:column;gap:8px}
-  .field label{font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+      .field {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .field label {
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
 
-  /* search dropdown */
-  .search-wrap{position:relative}
-  .search-wrap input{
-    width:100%;height:42px;
-    background:var(--surface2);border:1px solid var(--border);
-    border-radius:var(--radius-sm);
-    padding:0 14px 0 36px;
-    font-family:'DM Sans',sans-serif;font-size:13.5px;color:var(--text);
-    outline:none;transition:border-color .15s;
-  }
-  .search-wrap input:hover{border-color:var(--border-md)}
-  .search-wrap input:focus{border-color:var(--C-border);box-shadow:0 0 0 3px rgba(122,224,184,.08)}
-  .search-wrap > svg{
-    position:absolute;left:11px;top:50%;transform:translateY(-50%);
-    width:14px;height:14px;stroke:var(--muted);pointer-events:none;
-  }
-  .dropdown-list{
-    position:absolute;top:calc(100% + 4px);left:0;right:0;z-index:100;
-    background:var(--surface2);border:1px solid var(--border-md);
-    border-radius:var(--radius-sm);max-height:220px;overflow-y:auto;display:none;
-  }
-  .dropdown-list.open{display:block}
-  .dropdown-item{padding:9px 14px;font-size:13px;color:var(--text);cursor:pointer;transition:background .1s}
-  .dropdown-item:hover{background:var(--surface3)}
-  .dropdown-item mark{background:transparent;color:var(--C);font-weight:500}
+      /* search dropdown */
+      .search-wrap {
+        position: relative;
+      }
+      .search-wrap input {
+        width: 100%;
+        height: 42px;
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        padding: 0 14px 0 36px;
+        font-family: "DM Sans", sans-serif;
+        font-size: 13.5px;
+        color: var(--text);
+        outline: none;
+        transition: border-color 0.15s;
+      }
+      .search-wrap input:hover {
+        border-color: var(--border-md);
+      }
+      .search-wrap input:focus {
+        border-color: var(--C-border);
+        box-shadow: 0 0 0 3px rgba(122, 224, 184, 0.08);
+      }
+      .search-wrap > svg {
+        position: absolute;
+        left: 11px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 14px;
+        height: 14px;
+        stroke: var(--muted);
+        pointer-events: none;
+      }
+      .dropdown-list {
+        position: absolute;
+        top: calc(100% + 4px);
+        left: 0;
+        right: 0;
+        z-index: 100;
+        background: var(--surface2);
+        border: 1px solid var(--border-md);
+        border-radius: var(--radius-sm);
+        max-height: 220px;
+        overflow-y: auto;
+        display: none;
+      }
+      .dropdown-list.open {
+        display: block;
+      }
+      .dropdown-item {
+        padding: 9px 14px;
+        font-size: 13px;
+        color: var(--text);
+        cursor: pointer;
+        transition: background 0.1s;
+      }
+      .dropdown-item:hover {
+        background: var(--surface3);
+      }
+      .dropdown-item mark {
+        background: transparent;
+        color: var(--C);
+        font-weight: 500;
+      }
 
-  .run-btn{
-    height:42px;padding:0 28px;border-radius:var(--radius-sm);
-    background:var(--C);color:#08080E;font-family:'DM Sans',sans-serif;
-    font-size:13.5px;font-weight:500;border:none;cursor:pointer;
-    transition:opacity .15s;white-space:nowrap;
-  }
-  .run-btn:hover{opacity:.88}
-  .run-btn:disabled{opacity:.35;cursor:not-allowed}
+      .run-btn {
+        height: 42px;
+        padding: 0 28px;
+        border-radius: var(--radius-sm);
+        background: var(--C);
+        color: #08080e;
+        font-family: "DM Sans", sans-serif;
+        font-size: 13.5px;
+        font-weight: 500;
+        border: none;
+        cursor: pointer;
+        transition: opacity 0.15s;
+        white-space: nowrap;
+      }
+      .run-btn:hover {
+        opacity: 0.88;
+      }
+      .run-btn:disabled {
+        opacity: 0.35;
+        cursor: not-allowed;
+      }
 
-  /* ── Result layout ── */
-  #results{display:none}
+      /* ── Result layout ── */
+      #results {
+        display: none;
+      }
 
-  /* Delay hero card */
-  .delay-hero{
-    border-radius:var(--radius-lg);padding:32px 36px;margin-bottom:24px;
-    border:1px solid;display:flex;align-items:center;gap:28px;
-  }
-  .delay-hero.safe   {border-color:rgba(122,224,184,.3);background:rgba(122,224,184,.06)}
-  .delay-hero.warning{border-color:rgba(232,201,122,.3);background:rgba(232,201,122,.06)}
-  .delay-hero.risk   {border-color:rgba(232,122,122,.3);background:rgba(232,122,122,.06)}
+      /* Delay hero card */
+      .delay-hero {
+        border-radius: var(--radius-lg);
+        padding: 32px 36px;
+        margin-bottom: 24px;
+        border: 1px solid;
+        display: flex;
+        align-items: center;
+        gap: 28px;
+      }
+      .delay-hero.safe {
+        border-color: rgba(122, 224, 184, 0.3);
+        background: rgba(122, 224, 184, 0.06);
+      }
+      .delay-hero.warning {
+        border-color: rgba(232, 201, 122, 0.3);
+        background: rgba(232, 201, 122, 0.06);
+      }
+      .delay-hero.risk {
+        border-color: rgba(232, 122, 122, 0.3);
+        background: rgba(232, 122, 122, 0.06);
+      }
 
-  .delay-icon{
-    width:56px;height:56px;border-radius:14px;flex-shrink:0;
-    display:flex;align-items:center;justify-content:center;
-  }
-  .safe    .delay-icon{background:rgba(122,224,184,.15)}
-  .warning .delay-icon{background:rgba(232,201,122,.15)}
-  .risk    .delay-icon{background:rgba(232,122,122,.15)}
-  .delay-icon svg{width:26px;height:26px}
-  .safe    .delay-icon svg{stroke:var(--high)}
-  .warning .delay-icon svg{stroke:var(--emerging)}
-  .risk    .delay-icon svg{stroke:var(--low)}
+      .delay-icon {
+        width: 56px;
+        height: 56px;
+        border-radius: 14px;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .safe .delay-icon {
+        background: rgba(122, 224, 184, 0.15);
+      }
+      .warning .delay-icon {
+        background: rgba(232, 201, 122, 0.15);
+      }
+      .risk .delay-icon {
+        background: rgba(232, 122, 122, 0.15);
+      }
+      .delay-icon svg {
+        width: 26px;
+        height: 26px;
+      }
+      .safe .delay-icon svg {
+        stroke: var(--high);
+      }
+      .warning .delay-icon svg {
+        stroke: var(--emerging);
+      }
+      .risk .delay-icon svg {
+        stroke: var(--low);
+      }
 
-  .delay-hero-text .tag{
-    font-size:10.5px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;margin-bottom:6px;
-  }
-  .safe    .tag{color:var(--high)}
-  .warning .tag{color:var(--emerging)}
-  .risk    .tag{color:var(--low)}
+      .delay-hero-text .tag {
+        font-size: 10.5px;
+        font-weight: 500;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        margin-bottom: 6px;
+      }
+      .safe .tag {
+        color: var(--high);
+      }
+      .warning .tag {
+        color: var(--emerging);
+      }
+      .risk .tag {
+        color: var(--low);
+      }
 
-  .delay-hero-text h2{font-size:24px;font-weight:700;margin-bottom:4px}
-  .delay-hero-text p{font-size:13px;color:var(--muted)}
+      .delay-hero-text h2 {
+        font-size: 24px;
+        font-weight: 700;
+        margin-bottom: 4px;
+      }
+      .delay-hero-text p {
+        font-size: 13px;
+        color: var(--muted);
+      }
 
-  .delay-conf{margin-left:auto;text-align:center;flex-shrink:0}
-  .conf-ring{
-    width:72px;height:72px;border-radius:50%;
-    display:flex;align-items:center;justify-content:center;
-    font-family:'Syne',sans-serif;font-size:20px;font-weight:700;
-    border:3px solid;
-  }
-  .safe    .conf-ring{border-color:var(--high);color:var(--high)}
-  .warning .conf-ring{border-color:var(--emerging);color:var(--emerging)}
-  .risk    .conf-ring{border-color:var(--low);color:var(--low)}
-  .delay-conf .conf-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:6px}
+      .delay-conf {
+        margin-left: auto;
+        text-align: center;
+        flex-shrink: 0;
+      }
+      .conf-ring {
+        width: 72px;
+        height: 72px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Syne", sans-serif;
+        font-size: 20px;
+        font-weight: 700;
+        border: 3px solid;
+      }
+      .safe .conf-ring {
+        border-color: var(--high);
+        color: var(--high);
+      }
+      .warning .conf-ring {
+        border-color: var(--emerging);
+        color: var(--emerging);
+      }
+      .risk .conf-ring {
+        border-color: var(--low);
+        color: var(--low);
+      }
+      .delay-conf .conf-lbl {
+        font-size: 10px;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        margin-top: 6px;
+      }
 
-  /* Shipping recommendation card */
-  .ship-card{
-    background:var(--surface);border:1px solid var(--C-border);
-    border-radius:var(--radius-lg);padding:24px 28px;margin-bottom:24px;
-    display:flex;align-items:center;gap:20px;
-  }
-  .ship-badge{
-    background:var(--C-glow);border:1px solid var(--C-border);
-    border-radius:var(--radius-sm);padding:10px 18px;flex-shrink:0;
-    font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:var(--C);
-  }
-  .ship-info h4{font-size:14px;font-weight:500;color:var(--text);margin-bottom:4px}
-  .ship-info p{font-size:13px;color:var(--muted)}
+      /* Shipping recommendation card */
+      .ship-card {
+        background: var(--surface);
+        border: 1px solid var(--C-border);
+        border-radius: var(--radius-lg);
+        padding: 24px 28px;
+        margin-bottom: 24px;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+      }
+      .ship-badge {
+        background: var(--C-glow);
+        border: 1px solid var(--C-border);
+        border-radius: var(--radius-sm);
+        padding: 10px 18px;
+        flex-shrink: 0;
+        font-family: "Syne", sans-serif;
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--C);
+      }
+      .ship-info h4 {
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--text);
+        margin-bottom: 4px;
+      }
+      .ship-info p {
+        font-size: 13px;
+        color: var(--muted);
+      }
 
-  /* Context chips */
-  .context-chips{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:24px}
-  .chip{
-    display:inline-flex;align-items:center;gap:7px;
-    padding:6px 14px;border-radius:100px;font-size:12.5px;
-    border:1px solid var(--border);background:var(--surface);color:var(--text);
-  }
-  .chip svg{width:13px;height:13px;stroke:var(--muted)}
-  .chip span{color:var(--muted);font-size:11px}
+      .signals-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 18px 22px;
+        margin-bottom: 24px;
+      }
+      .signal-item {
+        padding: 10px 0;
+        border-bottom: 1px solid var(--border);
+      }
+      .signal-item:last-child {
+        border-bottom: none;
+      }
+      .signal-k {
+        font-size: 11px;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        margin-bottom: 4px;
+      }
+      .signal-v {
+        font-size: 13px;
+        color: var(--text);
+      }
 
-  /* Data note */
-  .data-note{
-    font-size:11.5px;color:var(--faint);
-    display:flex;align-items:center;gap:6px;margin-top:20px;
-  }
-  .data-note svg{width:13px;height:13px;stroke:var(--faint)}
-</style>
-</head>
-<body>
+      /* Context chips */
+      .context-chips {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 24px;
+      }
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 6px 14px;
+        border-radius: 100px;
+        font-size: 12.5px;
+        border: 1px solid var(--border);
+        background: var(--surface);
+        color: var(--text);
+      }
+      .chip svg {
+        width: 13px;
+        height: 13px;
+        stroke: var(--muted);
+      }
+      .chip span {
+        color: var(--muted);
+        font-size: 11px;
+      }
 
-<a class="back-btn" href="/"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>Home</a>
+      /* Data note */
+      .data-note {
+        font-size: 11.5px;
+        color: var(--faint);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 20px;
+      }
+      .data-note svg {
+        width: 13px;
+        height: 13px;
+        stroke: var(--faint);
+      }
+    </style>
+  </head>
+  <body>
+    <a class="back-btn" href="/"
+      ><svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="M19 12H5M12 5l-7 7 7 7" /></svg
+      >Home</a
+    >
 
-<div class="layout">
-  <!-- Sidebar -->
-  <aside class="sidebar">
-    <div class="sb-logo">
-      <div class="mark" style="background:linear-gradient(135deg,#2AB88A,#1A9870)">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-        </svg>
-      </div>
-      <div class="name">epoch<span> / consumer</span></div>
-    </div>
-    <div class="sb-section">
-      <p class="sb-label">Insights</p>
-      <div class="nav-item active">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-        Delivery Insights
-      </div>
-    </div>
-    <div class="sb-footer">epoch v0.1 · Consumer</div>
-  </aside>
-
-  <!-- Main -->
-  <main class="main">
-    <div class="page-header">
-      <p class="eyebrow">Consumer Intelligence</p>
-      <h1>Delivery Insights</h1>
-      <p>Select a product and your pincode — the model will predict delivery risk, estimated days, and the best shipping option.</p>
-    </div>
-
-    <!-- Query form -->
-    <div class="query-card">
-      <h3>Query the Model</h3>
-      <p>Two inputs are all it takes to get personalised delivery intelligence.</p>
-      <div class="input-row">
-
-        <!-- Product search -->
-        <div class="field">
-          <label>Product</label>
-          <div class="search-wrap" id="product-wrap">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-            <input type="text" id="product-input" placeholder="Search product…" autocomplete="off"
-              oninput="filterDropdown('product')" onfocus="openDropdown('product')" onblur="blurDropdown('product')"/>
-            <div class="dropdown-list" id="product-list"></div>
+    <div class="layout">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="sb-logo">
+          <div
+            class="mark"
+            style="background: linear-gradient(135deg, #2ab88a, #1a9870)"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+            </svg>
           </div>
-          <input type="hidden" id="product-value"/>
+          <div class="name">epoch<span> / consumer</span></div>
+        </div>
+        <div class="sb-section">
+          <p class="sb-label">Insights</p>
+          <div class="nav-item active">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+            </svg>
+            Delivery Insights
+          </div>
+        </div>
+        <div class="sb-footer">epoch v0.1 · Consumer</div>
+      </aside>
+
+      <!-- Main -->
+      <main class="main">
+        <div class="page-header">
+          <p class="eyebrow">Consumer Intelligence</p>
+          <h1>Delivery Insights</h1>
+          <p>
+            Select a product and your pincode — the model will predict delivery
+            risk, estimated days, and the best shipping option.
+          </p>
         </div>
 
-        <!-- Pincode search -->
-        <div class="field">
-          <label>Pincode</label>
-          <div class="search-wrap" id="pincode-wrap">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-            <input type="text" id="pincode-input" placeholder="Search pincode…" autocomplete="off"
-              oninput="filterDropdown('pincode')" onfocus="openDropdown('pincode')" onblur="blurDropdown('pincode')"/>
-            <div class="dropdown-list" id="pincode-list"></div>
+        <!-- Query form -->
+        <div class="query-card">
+          <h3>Query the Model</h3>
+          <p>
+            Two inputs are all it takes to get personalised delivery
+            intelligence.
+          </p>
+          <div class="input-row">
+            <!-- Product search -->
+            <div class="field">
+              <label>Product</label>
+              <div class="search-wrap" id="product-wrap">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <circle cx="11" cy="11" r="8" />
+                  <path d="M21 21l-4.35-4.35" />
+                </svg>
+                <input
+                  type="text"
+                  id="product-input"
+                  placeholder="Search product…"
+                  autocomplete="off"
+                  oninput="filterDropdown('product')"
+                  onfocus="openDropdown('product')"
+                  onblur="blurDropdown('product')"
+                />
+                <div class="dropdown-list" id="product-list"></div>
+              </div>
+              <input type="hidden" id="product-value" />
+            </div>
+
+            <!-- Pincode search -->
+            <div class="field">
+              <label>Pincode</label>
+              <div class="search-wrap" id="pincode-wrap">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                  <circle cx="12" cy="10" r="3" />
+                </svg>
+                <input
+                  type="text"
+                  id="pincode-input"
+                  placeholder="Search pincode…"
+                  autocomplete="off"
+                  oninput="filterDropdown('pincode')"
+                  onfocus="openDropdown('pincode')"
+                  onblur="blurDropdown('pincode')"
+                />
+                <div class="dropdown-list" id="pincode-list"></div>
+              </div>
+              <input type="hidden" id="pincode-value" />
+            </div>
+
+            <button class="run-btn" id="run-btn" onclick="runQuery()" disabled>
+              Get Insights
+            </button>
           </div>
-          <input type="hidden" id="pincode-value"/>
         </div>
 
-        <button class="run-btn" id="run-btn" onclick="runQuery()" disabled>Get Insights</button>
-      </div>
-    </div>
+        <!-- Loader -->
+        <div class="loader" id="loader" style="display: none">
+          <div class="spinner"></div>
+          <p>Running consumer models…</p>
+        </div>
 
-    <!-- Loader -->
-    <div class="loader" id="loader" style="display:none">
-      <div class="spinner"></div>
-      <p>Running consumer models…</p>
-    </div>
+        <!-- Results -->
+        <div id="results">
+          <!-- Delay hero -->
+          <div class="delay-hero" id="delay-hero">
+            <div class="delay-icon">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke-width="1.7"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <polyline points="12 6 12 12 16 14" />
+              </svg>
+            </div>
+            <div class="delay-hero-text">
+              <p class="tag" id="delay-tag">—</p>
+              <h2 id="delay-title">—</h2>
+              <p id="delay-sub">—</p>
+            </div>
+            <div class="delay-conf">
+              <div class="conf-ring" id="conf-ring">—</div>
+              <div class="conf-lbl">Confidence</div>
+            </div>
+          </div>
 
-    <!-- Results -->
-    <div id="results">
+          <!-- Stats row -->
+          <div class="stats-row" id="stats-row"></div>
 
-      <!-- Delay hero -->
-      <div class="delay-hero" id="delay-hero">
-        <div class="delay-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+          <!-- Shipping recommendation -->
+          <p class="section-head">Recommended Shipping</p>
+          <div class="ship-card" id="ship-card">
+            <div class="ship-badge" id="ship-mode">—</div>
+            <div class="ship-info">
+              <h4>Recommended Shipping Mode</h4>
+              <p id="ship-reason">—</p>
+            </div>
+          </div>
+
+          <div class="signals-card" id="signals-card" style="display: none">
+            <p class="section-head" style="margin-bottom: 10px">
+              External Delay Signals
+            </p>
+            <div class="signal-item" id="signal-weather" style="display: none">
+              <div class="signal-k">Weather</div>
+              <div class="signal-v" id="signal-weather-text">—</div>
+            </div>
+            <div class="signal-item" id="signal-news" style="display: none">
+              <div class="signal-k">News / Geopolitical</div>
+              <div class="signal-v" id="signal-news-text">—</div>
+            </div>
+          </div>
+
+          <!-- Context chips -->
+          <p class="section-head">Location Context</p>
+          <div class="context-chips" id="context-chips"></div>
+
+          <!-- Data note -->
+          <p class="data-note">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="8" x2="12" y2="12" />
+              <line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+            <span id="data-note-txt"
+              >Insights are based on historical order patterns.</span
+            >
+          </p>
+        </div>
+        <!-- /results -->
+
+        <!-- Empty state -->
+        <div class="empty" id="empty-state">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
           </svg>
+          <h4>Select a product and pincode</h4>
+          <p>The model will return personalised delivery insights</p>
         </div>
-        <div class="delay-hero-text">
-          <p class="tag" id="delay-tag">—</p>
-          <h2 id="delay-title">—</h2>
-          <p id="delay-sub">—</p>
-        </div>
-        <div class="delay-conf">
-          <div class="conf-ring" id="conf-ring">—</div>
-          <div class="conf-lbl">Confidence</div>
-        </div>
-      </div>
-
-      <!-- Stats row -->
-      <div class="stats-row" id="stats-row"></div>
-
-      <!-- Shipping recommendation -->
-      <p class="section-head">Recommended Shipping</p>
-      <div class="ship-card" id="ship-card">
-        <div class="ship-badge" id="ship-mode">—</div>
-        <div class="ship-info">
-          <h4>Recommended Shipping Mode</h4>
-          <p id="ship-reason">—</p>
-        </div>
-      </div>
-
-      <!-- Context chips -->
-      <p class="section-head">Location Context</p>
-      <div class="context-chips" id="context-chips"></div>
-
-      <!-- Data note -->
-      <p class="data-note">
-        <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-        <span id="data-note-txt">Insights are based on historical order patterns.</span>
-      </p>
-
-    </div><!-- /results -->
-
-    <!-- Empty state -->
-    <div class="empty" id="empty-state">
-      <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-      <h4>Select a product and pincode</h4>
-      <p>The model will return personalised delivery insights</p>
+      </main>
     </div>
+    <div id="toast"></div>
 
-  </main>
-</div>
-<div id="toast"></div>
+    <script>
+      const allProducts = [];
+      const allPincodes = [];
 
-<script>
-  const allProducts = [];
-  const allPincodes = [];
+      async function loadOptions() {
+        try {
+          const [pRes, pinRes] = await Promise.all([
+            fetch("/api/predict/options/products"),
+            fetch("/api/predict/options/pincodes"),
+          ]);
+          const pData = await pRes.json();
+          const pinData = await pinRes.json();
+          allProducts.push(...(pData.products || []));
+          allPincodes.push(...(pinData.pincodes || []));
+          renderList("product", allProducts);
+          renderList("pincode", allPincodes);
+        } catch (e) {
+          showToast(
+            "Could not load options — is the backend running?",
+            "error",
+          );
+        }
+      }
 
-  async function loadOptions(){
-    try{
-      const [pRes, pinRes] = await Promise.all([
-        fetch('/api/predict/options/products'),
-        fetch('/api/predict/options/pincodes'),
-      ]);
-      const pData   = await pRes.json();
-      const pinData = await pinRes.json();
-      allProducts.push(...(pData.products||[]));
-      allPincodes.push(...(pinData.pincodes||[]));
-      renderList('product', allProducts);
-      renderList('pincode', allPincodes);
-    }catch(e){
-      showToast('Could not load options — is the backend running?','error');
-    }
-  }
+      /* ── Searchable dropdown ── */
+      function renderList(type, items, query = "") {
+        const list = document.getElementById(`${type}-list`);
+        const q = query.toLowerCase();
+        const filtered = items
+          .filter((i) => String(i).toLowerCase().includes(q))
+          .slice(0, 80);
+        list.innerHTML =
+          filtered
+            .map(
+              (item) => `
+      <div class="dropdown-item" onmousedown="selectItem('${type}','${escJs(String(item))}')">${highlight(String(item), q)}</div>
+    `,
+            )
+            .join("") ||
+          `<div class="dropdown-item" style="color:var(--muted)">No results</div>`;
+      }
 
-  /* ── Searchable dropdown ── */
-  function renderList(type, items, query=''){
-    const list = document.getElementById(`${type}-list`);
-    const q    = query.toLowerCase();
-    const filtered = items.filter(i=>String(i).toLowerCase().includes(q)).slice(0,80);
-    list.innerHTML = filtered.map(item=>`
-      <div class="dropdown-item" onmousedown="selectItem('${type}','${escJs(String(item))}')">${highlight(String(item),q)}</div>
-    `).join('') || `<div class="dropdown-item" style="color:var(--muted)">No results</div>`;
-  }
+      function filterDropdown(type) {
+        const q = document.getElementById(`${type}-input`).value;
+        const src = type === "product" ? allProducts : allPincodes;
+        renderList(type, src, q);
+        document.getElementById(`${type}-list`).classList.add("open");
+        document.getElementById(`${type}-value`).value = "";
+        checkReady();
+      }
+      function openDropdown(type) {
+        filterDropdown(type);
+      }
+      function blurDropdown(type) {
+        setTimeout(
+          () =>
+            document.getElementById(`${type}-list`).classList.remove("open"),
+          180,
+        );
+      }
+      function selectItem(type, val) {
+        document.getElementById(`${type}-input`).value = val;
+        document.getElementById(`${type}-value`).value = val;
+        document.getElementById(`${type}-list`).classList.remove("open");
+        checkReady();
+      }
+      function checkReady() {
+        const p = document.getElementById("product-value").value;
+        const pc = document.getElementById("pincode-value").value;
+        document.getElementById("run-btn").disabled = !(p && pc);
+      }
+      function highlight(text, q) {
+        if (!q) return escHtml(text);
+        const re = new RegExp(
+          `(${q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`,
+          "gi",
+        );
+        return escHtml(text).replace(re, "<mark>$1</mark>");
+      }
 
-  function filterDropdown(type){
-    const q   = document.getElementById(`${type}-input`).value;
-    const src = type==='product'?allProducts:allPincodes;
-    renderList(type, src, q);
-    document.getElementById(`${type}-list`).classList.add('open');
-    document.getElementById(`${type}-value`).value='';
-    checkReady();
-  }
-  function openDropdown(type){ filterDropdown(type) }
-  function blurDropdown(type){ setTimeout(()=>document.getElementById(`${type}-list`).classList.remove('open'),180) }
-  function selectItem(type,val){
-    document.getElementById(`${type}-input`).value=val;
-    document.getElementById(`${type}-value`).value=val;
-    document.getElementById(`${type}-list`).classList.remove('open');
-    checkReady();
-  }
-  function checkReady(){
-    const p  = document.getElementById('product-value').value;
-    const pc = document.getElementById('pincode-value').value;
-    document.getElementById('run-btn').disabled = !(p&&pc);
-  }
-  function highlight(text,q){
-    if(!q) return escHtml(text);
-    const re=new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})`, 'gi');
-    return escHtml(text).replace(re,'<mark>$1</mark>');
-  }
+      /* ── Run query ── */
+      async function runQuery() {
+        const product = document.getElementById("product-value").value;
+        const pincode = document.getElementById("pincode-value").value;
+        if (!product || !pincode) return;
 
-  /* ── Run query ── */
-  async function runQuery(){
-    const product = document.getElementById('product-value').value;
-    const pincode = document.getElementById('pincode-value').value;
-    if(!product||!pincode) return;
+        document.getElementById("empty-state").style.display = "none";
+        document.getElementById("results").style.display = "none";
+        document.getElementById("loader").style.display = "flex";
 
-    document.getElementById('empty-state').style.display='none';
-    document.getElementById('results').style.display='none';
-    document.getElementById('loader').style.display='flex';
+        try {
+          const res = await fetch("/api/predict/consumer", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ product, pincode }),
+          });
+          const data = await res.json();
+          if (data.error) throw new Error(data.error);
+          renderResults(data);
+        } catch (err) {
+          showToast(err.message || "Query failed", "error");
+          document.getElementById("empty-state").style.display = "block";
+        } finally {
+          document.getElementById("loader").style.display = "none";
+        }
+      }
 
-    try{
-      const res  = await fetch('/api/predict/consumer',{
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({product,pincode})
-      });
-      const data = await res.json();
-      if(data.error) throw new Error(data.error);
-      renderResults(data);
-    }catch(err){
-      showToast(err.message||'Query failed','error');
-      document.getElementById('empty-state').style.display='block';
-    }finally{
-      document.getElementById('loader').style.display='none';
-    }
-  }
+      /* ── Render ── */
+      function renderResults(d) {
+        const delay = d.delay || {};
+        const delivery = d.delivery || {};
+        const shipping = d.shipping || {};
+        const ctx = d.context || {};
 
-  /* ── Render ── */
-  function renderResults(d){
-    const delay    = d.delay    || {};
-    const delivery = d.delivery || {};
-    const shipping = d.shipping || {};
-    const ctx      = d.context  || {};
+        // Delay hero class
+        const risk = delay.delay_risk || 0;
+        const heroClass =
+          risk >= 0.6 ? "risk" : risk >= 0.4 ? "warning" : "safe";
+        const hero = document.getElementById("delay-hero");
+        hero.className = `delay-hero ${heroClass}`;
 
-    // Delay hero class
-    const risk = delay.delay_risk || 0;
-    const heroClass = risk>=0.6?'risk':risk>=0.4?'warning':'safe';
-    const hero = document.getElementById('delay-hero');
-    hero.className = `delay-hero ${heroClass}`;
+        document.getElementById("conf-ring").className = `conf-ring`;
+        hero.className = `delay-hero ${heroClass}`;
+        document.getElementById("delay-tag").textContent =
+          delay.is_late_predicted ? "Delay Predicted" : "On Time Expected";
+        document.getElementById("delay-title").textContent =
+          delay.is_late_predicted
+            ? "This order is likely to be delayed"
+            : "This order is expected to arrive on time";
+        document.getElementById("delay-sub").textContent =
+          delivery.estimated_days != null
+            ? `Estimated ${delivery.estimated_days} days · Scheduled ${delivery.scheduled_days} days`
+            : "Insufficient historical data for exact estimate";
+        document.getElementById("conf-ring").textContent =
+          `${delay.confidence || 0}%`;
 
-    document.getElementById('conf-ring').className  = `conf-ring`;
-    hero.className = `delay-hero ${heroClass}`;
-    document.getElementById('delay-tag').textContent   = delay.is_late_predicted ? 'Delay Predicted' : 'On Time Expected';
-    document.getElementById('delay-title').textContent = delay.is_late_predicted
-      ? 'This order is likely to be delayed'
-      : 'This order is expected to arrive on time';
-    document.getElementById('delay-sub').textContent   =
-      delivery.estimated_days!=null
-        ? `Estimated ${delivery.estimated_days} days · Scheduled ${delivery.scheduled_days} days`
-        : 'Insufficient historical data for exact estimate';
-    document.getElementById('conf-ring').textContent   = `${delay.confidence||0}%`;
-
-    // Stats
-    document.getElementById('stats-row').innerHTML = `
-      <div class="stat-card"><div class="label">Delay Risk</div><div class="value">${Math.round(risk*100)}%</div></div>
-      <div class="stat-card"><div class="label">Est. Delivery Days</div><div class="value">${delivery.estimated_days!=null?delivery.estimated_days+'d':'—'}</div></div>
-      <div class="stat-card"><div class="label">Avg Delay Gap</div><div class="value">${delivery.avg_gap!=null?(delivery.avg_gap>0?'+':'')+delivery.avg_gap+'d':'—'}</div></div>
-      <div class="stat-card"><div class="label">Historical Orders</div><div class="value">${d.order_count||0}</div></div>
+        // Stats
+        document.getElementById("stats-row").innerHTML = `
+      <div class="stat-card"><div class="label">Delay Risk</div><div class="value">${Math.round(risk * 100)}%</div></div>
+      <div class="stat-card"><div class="label">Est. Delivery Days</div><div class="value">${delivery.estimated_days != null ? delivery.estimated_days + "d" : "—"}</div></div>
+      <div class="stat-card"><div class="label">Avg Delay Gap</div><div class="value">${delivery.avg_gap != null ? (delivery.avg_gap > 0 ? "+" : "") + delivery.avg_gap + "d" : "—"}</div></div>
+      <div class="stat-card"><div class="label">Historical Orders</div><div class="value">${d.order_count || 0}</div></div>
     `;
 
-    // Shipping recommendation
-    document.getElementById('ship-mode').textContent   = shipping.recommended_mode || '—';
-    document.getElementById('ship-reason').textContent = shipping.reason || '—';
+        // Shipping recommendation
+        document.getElementById("ship-mode").textContent =
+          shipping.recommended_mode || "—";
+        document.getElementById("ship-reason").textContent =
+          shipping.reason || "—";
 
-    // Context chips
-    document.getElementById('context-chips').innerHTML = [
-      {icon:'<circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10z"/>',  label:'Market',  val:ctx.market},
-      {icon:'<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',                       label:'Region',  val:ctx.region},
-      {icon:'<circle cx="12" cy="10" r="3"/><path d="M12 22s8-4 8-10a8 8 0 0 0-16 0c0 6 8 10 8 10z"/>',  label:'Country', val:ctx.country},
-      {icon:'<rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/>',  label:'Pincode', val:d.pincode},
-    ].map(c=>`
+        // External delay signals (separate box)
+        const signals = shipping.external_delay_signals || {};
+        const weatherSignal = signals.weather;
+        const newsSignal = signals.news;
+
+        const signalsCard = document.getElementById("signals-card");
+        const signalWeather = document.getElementById("signal-weather");
+        const signalNews = document.getElementById("signal-news");
+
+        if (weatherSignal || newsSignal) {
+          signalsCard.style.display = "block";
+          if (weatherSignal) {
+            signalWeather.style.display = "block";
+            document.getElementById("signal-weather-text").textContent =
+              weatherSignal;
+          } else {
+            signalWeather.style.display = "none";
+          }
+          if (newsSignal) {
+            signalNews.style.display = "block";
+            document.getElementById("signal-news-text").textContent =
+              newsSignal;
+          } else {
+            signalNews.style.display = "none";
+          }
+        } else {
+          signalsCard.style.display = "none";
+          signalWeather.style.display = "none";
+          signalNews.style.display = "none";
+        }
+
+        // Context chips
+        document.getElementById("context-chips").innerHTML = [
+          {
+            icon: '<circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10z"/>',
+            label: "Market",
+            val: ctx.market,
+          },
+          {
+            icon: '<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
+            label: "Region",
+            val: ctx.region,
+          },
+          {
+            icon: '<circle cx="12" cy="10" r="3"/><path d="M12 22s8-4 8-10a8 8 0 0 0-16 0c0 6 8 10 8 10z"/>',
+            label: "Country",
+            val: ctx.country,
+          },
+          {
+            icon: '<rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/>',
+            label: "Pincode",
+            val: d.pincode,
+          },
+        ]
+          .map(
+            (c) => `
       <div class="chip">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${c.icon}</svg>
-        <span>${c.label}</span> ${escHtml(String(c.val||'—'))}
+        <span>${c.label}</span> ${escHtml(String(c.val || "—"))}
       </div>
-    `).join('');
+    `,
+          )
+          .join("");
 
-    // Data note
-    document.getElementById('data-note-txt').textContent =
-      d.data_source==='pincode-matched'
-        ? `Insights based on ${d.order_count} orders matching this product and pincode.`
-        : `No exact pincode match — insights based on ${d.order_count} orders for this product across all locations.`;
+        // Data note
+        document.getElementById("data-note-txt").textContent =
+          d.data_source === "pincode-matched"
+            ? `Insights based on ${d.order_count} orders matching this product and pincode.`
+            : `No exact pincode match — insights based on ${d.order_count} orders for this product across all locations.`;
 
-    document.getElementById('results').style.display='block';
-  }
+        document.getElementById("results").style.display = "block";
+      }
 
-  /* ── Helpers ── */
-  function escHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;') }
-  function escJs(s)  { return s.replace(/'/g,"\\'") }
-  function showToast(msg,type=''){
-    const t=document.getElementById('toast');
-    t.textContent=msg; t.className=`show ${type}`;
-    setTimeout(()=>t.className='',3500);
-  }
+      /* ── Helpers ── */
+      function escHtml(s) {
+        return String(s)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+      }
+      function escJs(s) {
+        return s.replace(/'/g, "\\'");
+      }
+      function showToast(msg, type = "") {
+        const t = document.getElementById("toast");
+        t.textContent = msg;
+        t.className = `show ${type}`;
+        setTimeout(() => (t.className = ""), 3500);
+      }
 
-  loadOptions();
-</script>
-</body>
+      loadOptions();
+    </script>
+  </body>
 </html>

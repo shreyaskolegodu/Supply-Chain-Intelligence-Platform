@@ -18,6 +18,96 @@ sys.path.insert(0, ROOT)
 
 prediction_bp = Blueprint("prediction", __name__)
 
+
+def _augment_shipping_reason_with_external_signals(result: dict) -> dict:
+    """
+    Attach weather/news disruption notes as separate fields when delay risk is elevated.
+    Keeps the existing model/rule-based shipping reason unchanged.
+    """
+    if not isinstance(result, dict):
+        return result
+
+    delay = result.get("delay") or {}
+    shipping = result.get("shipping") or {}
+    context = result.get("context") or {}
+
+    delay_risk = delay.get("delay_risk")
+    is_late = bool(delay.get("is_late_predicted"))
+    if delay_risk is None:
+        return result
+
+    if not (is_late or float(delay_risk) >= 0.5):
+        return result
+
+    market = context.get("market")
+    if not market:
+        return result
+
+    weather_note = None
+    news_note = None
+    external_factors = []
+
+    # Weather factor
+    try:
+        from services.weather_service import fetch_weather
+
+        weather_payload = fetch_weather(region=market)
+        weather_items = ((weather_payload or {}).get("weather") or {}).get(market, [])
+        risky_weather = [
+            item for item in weather_items
+            if str(item.get("disruption_risk", "")).lower() in {"high", "medium"}
+        ]
+        if risky_weather:
+            city_bits = [
+                f"{item.get('city')} ({item.get('disruption_risk')})"
+                for item in risky_weather[:3]
+                if item.get("city")
+            ]
+            if city_bits:
+                external_factors.append("weather")
+                weather_note = "Weather disruptions are active in key hubs: " + ", ".join(city_bits) + "."
+    except Exception:
+        pass
+
+    # News / war-conflict factor
+    try:
+        from services.news_service import fetch_news
+
+        news_payload = fetch_news(market=market)
+        articles = (news_payload or {}).get("articles") or []
+        war_keywords = {
+            "war", "conflict", "attack", "military", "sanction", "sanctions",
+            "missile", "airstrike", "red sea", "shipping lane", "blockade",
+        }
+
+        war_related = []
+        for article in articles:
+            title = str(article.get("title", ""))
+            title_l = title.lower()
+            if any(keyword in title_l for keyword in war_keywords):
+                war_related.append(article)
+
+        if war_related:
+            top_title = str(war_related[0].get("title", "")).strip()
+            external_factors.append("war_news")
+            news_note = (
+                "Conflict-related news may be affecting routes"
+                + (f": '{top_title}'" if top_title else ".")
+            )
+    except Exception:
+        pass
+
+    if not weather_note and not news_note:
+        return result
+
+    shipping["external_factors"] = external_factors
+    shipping["external_delay_signals"] = {
+        "weather": weather_note,
+        "news": news_note,
+    }
+    result["shipping"] = shipping
+    return result
+
 # ── Dataset cache (loaded once on first request) ──────────────────────────────
 _dataset_cache = None
 
@@ -162,6 +252,8 @@ def predict_consumer():
     try:
         df = _get_dataset()
         from models.consumer_models.consumer_insights import predict_for_product_pincode
-        return jsonify(predict_for_product_pincode(df, product, pincode))
+        result = predict_for_product_pincode(df, product, pincode)
+        result = _augment_shipping_reason_with_external_signals(result)
+        return jsonify(result)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
